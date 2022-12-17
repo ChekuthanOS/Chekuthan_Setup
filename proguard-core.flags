@@ -1,0 +1,2 @@
+# HellCustomization
+-keep class in.ghostreborn.hellcustomization.**

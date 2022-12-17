@@ -1,0 +1,130 @@
+diff --git a/.gitignore b/.gitignore
+index 1062418..4662c84 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,2 +1,3 @@
+ .idea/
+ *.iml
++HellCustomization/*
+diff --git a/Android.bp b/Android.bp
+index be3a85a..3d23302 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -53,7 +53,18 @@ android_library {
+         "SettingsLib-search-defaults",
+     ],
+ 
+-    srcs: ["src/**/*.java", "src/**/*.kt"],
++    srcs: [
++        "src/**/*.java",
++        "src/**/*.kt",
++        "HellCustomization/src/**/*.java",
++    ],
++
++    aaptflags: ["--extra-packages in.ghostreborn.hellcustomization"],
++
++    resource_dirs: [
++        "res",
++        "HellCustomization/res"
++    ],
+ 
+     static_libs: [
+         "androidx-constraintlayout_constraintlayout",
+@@ -98,6 +109,11 @@ android_library {
+         "telephony-common",
+         "ims-common",
+     ],
++
++    optimize: {
++        proguard_flags_files: ["proguard-core.flags"],
++    },
++
+ }
+ 
+ platform_compat_config {
+diff --git a/AndroidManifest.xml b/AndroidManifest.xml
+index c4fba3d..50e2807 100644
+--- a/AndroidManifest.xml
++++ b/AndroidManifest.xml
+@@ -4533,5 +4533,36 @@
+         </activity>
+ 
+         <!-- This is the longest AndroidManifest.xml ever. -->
++
++        <!-- Hell Customization -->
++        <activity android:name="Settings$HellCustomizationActivity"
++            android:label="HellCustomization"
++            android:icon="@drawable/ic_settings_hell_customization"
++            android:taskAffinity="com.android.settings"
++            android:exported="true">
++            <intent-filter android:priority="1">
++                <action android:name="in.ghostreborn.hellcustomization.HellCustomization" />
++                <category android:name="android.intent.category.DEFAULT" />
++            </intent-filter>
++            <intent-filter>
++                <action android:name="android.intent.action.MAIN" />
++                <category android:name="android.intent.category.DEFAULT" />
++                <category android:name="android.intent.category.VOICE_LAUNCH" />
++                <category android:name="com.android.settings.SHORTCUT" />
++            </intent-filter>
++            <intent-filter android:priority="10">
++                <action android:name="com.android.settings.action.SETTINGS" />
++            </intent-filter>
++            <meta-data android:name="com.android.settings.category"
++                android:value="com.android.settings.category.ia.homepage" />
++            <meta-data android:name="com.android.settings.order" android:value="-105"/>
++            <meta-data android:name="com.android.settings.FRAGMENT_CLASS"
++                android:value="in.ghostreborn.hellcustomization.HellCustomization" />
++            <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
++                android:value="true" />
++            <meta-data android:name="com.android.settings.summary"
++                android:value="The most highly customizable OS ever!"/>
++        </activity>
++
+     </application>
+ </manifest>
+diff --git a/src/com/android/settings/Settings.java b/src/com/android/settings/Settings.java
+index f1c1191..f3e6cfb 100644
+--- a/src/com/android/settings/Settings.java
++++ b/src/com/android/settings/Settings.java
+@@ -438,4 +438,10 @@ public class Settings extends SettingsActivity {
+      * Activity for OneHandedSettings
+      */
+     public static class OneHandedSettingsActivity extends SettingsActivity { /* empty */ }
++
++    /**
++     * Activity for Hell Customization
++     */
++    public static class CustomizationActivity extends SettingsActivity { /* empty */ }
++
+ }
+diff --git a/src/com/android/settings/core/gateway/SettingsGateway.java b/src/com/android/settings/core/gateway/SettingsGateway.java
+index dc746ce..005c6fd 100644
+--- a/src/com/android/settings/core/gateway/SettingsGateway.java
++++ b/src/com/android/settings/core/gateway/SettingsGateway.java
+@@ -179,6 +179,8 @@ import com.android.settings.wifi.p2p.WifiP2pSettings;
+ import com.android.settings.wifi.savedaccesspoints2.SavedAccessPointsWifiSettings2;
+ import com.android.settings.wifi.tether.WifiTetherSettings;
+ 
++import in.ghostreborn.hellcustomization.HellCustomization;
++
+ public class SettingsGateway {
+ 
+     /**
+@@ -345,7 +347,8 @@ public class SettingsGateway {
+             MobileNetworkSettings.class.getName(),
+             AppLocaleDetails.class.getName(),
+             TurnScreenOnSettings.class.getName(),
+-            TurnScreenOnDetails.class.getName()
++            TurnScreenOnDetails.class.getName(),
++            HellCustomization.class.getName(),
+     };
+ 
+     public static final String[] SETTINGS_FOR_RESTRICTED = {
+@@ -388,5 +391,6 @@ public class SettingsGateway {
+             Settings.MyDeviceInfoActivity.class.getName(),
+             Settings.ModuleLicensesActivity.class.getName(),
+             UserBackupSettingsActivity.class.getName(),
++            HellCustomization.class.getName(),
+     };
+ }
